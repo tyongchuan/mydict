@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const parseArgs = require('minimist');
+const { translate, shell, version } = require('../');
+const print = console.log;
+
+const options = {
+    boolean: ['shell', 'help', 'version', 'debug', 'keepHistory'],
+    alias: {
+        i: 'shell',
+        h: 'help',
+        k: 'keepHistory',
+        v: 'version',
+        d: 'debug'
+    }
+};
+
+const args = parseArgs(process.argv.slice(2), options);
+
+process.title = 'mydict';
+
+if (args.help) {
+    help();
+    process.exit(0);
+}
+if (args.version) {
+    print(`VERSION: ${version}`);
+    process.exit(0);
+}
+if (args.debug) {
+    process.env.DEBUG = true;
+}
+if (args.shell) {
+    shell(args.keepHistory);
+}
+if (args._.length) {
+    translate(args._[0], args.keepHistory);
+}
+if (!args.shell && !args._.length) {
+    help();
+    process.exit(1);
+}
+
+function help() {
+  print(
+`NANE:
+  mydict - translate between english chinese
+
+USAGE:
+  mydict [options] <word>
+
+OPTIONS:
+  -d, --debug       display debug info
+  -i, --shell       interactive mode
+  -h, --help        display help info
+  -k, --keepHistory keep history of query
+  -v, --version     display version`);
+}
+
